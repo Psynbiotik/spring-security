@@ -140,9 +140,12 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
 	 * {@code filter} should be placed after.
 	 */
 	void registerAfter(Class<? extends Filter> filter, Class<? extends Filter> afterFilter) {
-		Integer position = getOrder(afterFilter);
-		Assert.notNull(position, () -> "Cannot register after unregistered Filter " + afterFilter);
-		put(filter, position + 1);
+		Integer afterPosition = getOrder(afterFilter);
+		Assert.notNull(afterPosition, () -> "Cannot register after unregistered Filter " + afterFilter);
+		Integer currentPosition = getOrder(filter);
+		if(currentPosition == null || currentPosition <= afterPosition) {
+			put(filter, afterPosition + 1);	
+		}		
 	}
 
 	/**
@@ -153,7 +156,7 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
 	 */
 	void registerAt(Class<? extends Filter> filter, Class<? extends Filter> atFilter) {
 		Integer position = getOrder(atFilter);
-		Assert.notNull(position, () -> "Cannot register after unregistered Filter " + atFilter);
+		Assert.notNull(position, () -> "Cannot register at unregistered Filter " + atFilter);
 		put(filter, position);
 	}
 
@@ -165,9 +168,12 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
 	 * {@code filter} should be placed before.
 	 */
 	void registerBefore(Class<? extends Filter> filter, Class<? extends Filter> beforeFilter) {
-		Integer position = getOrder(beforeFilter);
-		Assert.notNull(position, () -> "Cannot register after unregistered Filter " + beforeFilter);
-		put(filter, position - 1);
+		Integer beforePosition = getOrder(beforeFilter);
+		Assert.notNull(beforePosition, () -> "Cannot register before unregistered Filter " + beforeFilter);
+		Integer currentPosition = getOrder(filter);
+		if(currentPosition == null || currentPosition >= beforePosition) {
+			put(filter, beforePosition - 1);	
+		}
 	}
 
 	private void put(Class<? extends Filter> filter, int position) {
